@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medeor - KI Basic Kurs</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2196F3, #21CBF3);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .quiz-container {
+            padding: 40px;
+        }
+        
+        .question {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid #2196F3;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .question h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            line-height: 1.4;
+        }
+        
+        .points {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .option:hover {
+            border-color: #2196F3;
+            background: #f0f7ff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.2);
+        }
+        
+        .option input[type="checkbox"] {
+            margin-right: 15px;
+            transform: scale(1.2);
+            accent-color: #2196F3;
+        }
+        
+        .option input[type="radio"] {
+            margin-right: 15px;
+            transform: scale(1.2);
+            accent-color: #2196F3;
+        }
+        
+        .option.selected {
+            background: #e3f2fd;
+            border-color: #2196F3;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            display: block;
+            margin: 40px auto;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+        }
+        
+        .results {
+            margin-top: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            display: none;
+        }
+        
+        .results.show {
+            display: block;
+        }
+        
+        .score {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.3em;
+        }
+        
+        .score.perfect {
+            color: #4CAF50;
+        }
+        
+        .score.failed {
+            color: #f44336;
+        }
+        
+        .message {
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .message.failure {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .answer-review {
+            margin-top: 30px;
+        }
+        
+        .answer-item {
+            margin-bottom: 25px;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #ddd;
+        }
+        
+        .answer-item.correct {
+            background: #d4edda;
+            border-left-color: #28a745;
+        }
+        
+        .answer-item.incorrect {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+        }
+        
+        .answer-item h4 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .your-answer {
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .correct-answer {
+            color: #28a745;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Medeor - KI Basic Kurs</h1>
+            <p>Testen Sie Ihr Wissen über Künstliche Intelligenz</p>
+        </div>
+        
+        <div class="quiz-container">
+            <form id="quizForm">
+                <!-- Frage 1 -->
+                <div class="question">
+                    <h3>Was kannst du mit ChatGPT direkt umsetzen?*</h3>
+                    <div class="points">3 Punkte</div>
+                    <div class="options">
+                        <label class="option" for="q1_emails">
+                            <input type="checkbox" id="q1_emails" name="q1" value="emails">
+                            E-Mails verfassen lassen
+                        </label>
+                        <label class="option" for="q1_texte">
+                            <input type="checkbox" id="q1_texte" name="q1" value="texte">
+                            Texte schreiben
+                        </label>
+                        <label class="option" for="q1_bilder">
+                            <input type="checkbox" id="q1_bilder" name="q1" value="bilder">
+                            Bilder generieren
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Frage 2 -->
+                <div class="question">
+                    <h3>Was bedeutet es, wenn wir im Kurs von einem "Prompt" gesprochen haben?</h3>
+                    <div class="points">3 Punkte</div>
+                    <div class="options">
+                        <label class="option" for="q2_hardware">
+                            <input type="radio" id="q2_hardware" name="q2" value="hardware">
+                            Eine spezielle Hardware für KI
+                        </label>
+                        <label class="option" for="q2_eingabe">
+                            <input type="radio" id="q2_eingabe" name="q2" value="eingabe">
+                            Eine Eingabe oder Frage, die du der KI stellst
+                        </label>
+                        <label class="option" for="q2_ergebnis">
+                            <input type="radio" id="q2_ergebnis" name="q2" value="ergebnis">
+                            Ein Ergebnis, das die KI liefert
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Frage 3 -->
+                <div class="question">
+                    <h3>Was ist ein typischer Vorteil davon, die sogenannte Temperatur-Einstellung in ChatGPT anzupassen?</h3>
+                    <div class="points">3 Punkte</div>
+                    <div class="options">
+                        <label class="option" for="q3_leistung">
+                            <input type="radio" id="q3_leistung" name="q3" value="leistung">
+                            Leistung von PC minimieren
+                        </label>
+                        <label class="option" for="q3_geschwindigkeit">
+                            <input type="radio" id="q3_geschwindigkeit" name="q3" value="geschwindigkeit">
+                            Geschwindigkeit der Antwort beeinflussen
+                        </label>
+                        <label class="option" for="q3_kreativitaet">
+                            <input type="radio" id="q3_kreativitaet" name="q3" value="kreativitaet">
+                            Kreativität der Antworten beeinflussen
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Frage 4 -->
+                <div class="question">
+                    <h3>Was bedeutet die Abkürzung "GPT" im Kontext von ChatGPT?</h3>
+                    <div class="points">3 Punkte</div>
+                    <div class="options">
+                        <label class="option" for="q4_global">
+                            <input type="radio" id="q4_global" name="q4" value="global">
+                            Global Prompting Technique
+                        </label>
+                        <label class="option" for="q4_generative">
+                            <input type="radio" id="q4_generative" name="q4" value="generative">
+                            Generative Pre-trained Transformer
+                        </label>
+                        <label class="option" for="q4_general">
+                            <input type="radio" id="q4_general" name="q4" value="general">
+                            General Parameter Telegram
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Frage 5 -->
+                <div class="question">
+                    <h3>Kann ChatGPT auf Spanisch antworten, obwohl ich meine Fragen auf Deutsch stelle?</h3>
+                    <div class="points">3 Punkte</div>
+                    <div class="options">
+                        <label class="option" for="q5_ja_anweisung">
+                            <input type="radio" id="q5_ja_anweisung" name="q5" value="ja_anweisung">
+                            Ja, wenn ich ihm diese Anweisung gebe
+                        </label>
+                        <label class="option" for="q5_ja_pro">
+                            <input type="radio" id="q5_ja_pro" name="q5" value="ja_pro">
+                            Ja, dafür braucht es aber die Pro-Version von ChatGPT
+                        </label>
+                        <label class="option" for="q5_nein">
+                            <input type="radio" id="q5_nein" name="q5" value="nein">
+                            Nein
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Frage 6 -->
+                <div class="question">
+                    <h3>Kann ChatGPT mir Dokumente in gängigen Formaten wie PDF, Word, Excel etc. exportieren?</h3>
+                    <div class="points">3 Punkte</div>
+                    <div class="options">
+                        <label class="option" for="q6_ja">
+                            <input type="radio" id="q6_ja" name="q6" value="ja">
+                            Ja
+                        </label>
+                        <label class="option" for="q6_nein">
+                            <input type="radio" id="q6_nein" name="q6" value="nein">
+                            Nein
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Frage 7 -->
+                <div class="question">
+                    <h3>Wenn du ein Ergebnis von ChatGPT noch einmal verbessern möchtest, was solltest du tun?</h3>
+                    <div class="points">3 Punkte</div>
+                    <div class="options">
+                        <label class="option" for="q7_gleiche_frage">
+                            <input type="radio" id="q7_gleiche_frage" name="q7" value="gleiche_frage">
+                            Einfach nochmal die gleiche Frage stellen
+                        </label>
+                        <label class="option" for="q7_genauer">
+                            <input type="radio" id="q7_genauer" name="q7" value="genauer">
+                            Deine Anweisung oder den Prompt genauer formulieren
+                        </label>
+                        <label class="option" for="q7_neustart">
+                            <input type="radio" id="q7_neustart" name="q7" value="neustart">
+                            Den Computer neu starten
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Frage 8 -->
+                <div class="question">
+                    <h3>Wenn ich ein neues Thema mit ChatGPT behandle:</h3>
+                    <div class="points">3 Punkte</div>
+                    <div class="options">
+                        <label class="option" for="q8_gleicher_chat">
+                            <input type="radio" id="q8_gleicher_chat" name="q8" value="gleicher_chat">
+                            Kann ich immer im gleichen Chat bleiben
+                        </label>
+                        <label class="option" for="q8_neuer_chat">
+                            <input type="radio" id="q8_neuer_chat" name="q8" value="neuer_chat">
+                            Erhalte ich bessere Resultate wenn ich einen neuen Chat öffne
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Frage 9 -->
+                <div class="question">
+                    <h3>Was ist wichtig im Umgang mit KI</h3>
+                    <div class="points">3 Punkte</div>
+                    <div class="options">
+                        <label class="option" for="q9_blind_vertrauen">
+                            <input type="radio" id="q9_blind_vertrauen" name="q9" value="blind_vertrauen">
+                            Blind vertrauen und für alles nutzen
+                        </label>
+                        <label class="option" for="q9_kritisch">
+                            <input type="radio" id="q9_kritisch" name="q9" value="kritisch">
+                            Kritisch hinterfragen und die Ergebnisse überprüfen
+                        </label>
+                        <label class="option" for="q9_ueberfordern">
+                            <input type="radio" id="q9_ueberfordern" name="q9" value="ueberfordern">
+                            Die KI immer mit komplexen Aufgaben überfordern
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Frage 10 -->
+                <div class="question">
+                    <h3>Was ist KI?</h3>
+                    <div class="points">3 Punkte</div>
+                    <div class="options">
+                        <label class="option" for="q10_richtig">
+                            <input type="radio" id="q10_richtig" name="q10" value="richtig">
+                            KI kann Aufgaben wie Menschen erledigen: verstehen, lernen, Entscheidungen treffen. Generative KI kann sogar neue Inhalte wie Texte, Bilder oder Musik erschaffen.
+                        </label>
+                        <label class="option" for="q10_falsch">
+                            <input type="radio" id="q10_falsch" name="q10" value="falsch">
+                            KI ist ein Roboter, der immer alles weiss, nie Fehler macht und ganz von selbst denken kann.
+                        </label>
+                    </div>
+                </div>
+                
+                <button type="button" class="submit-btn" onclick="evaluateQuiz()">Quiz auswerten</button>
+            </form>
+            
+            <div class="results" id="results">
+                <div class="score" id="score"></div>
+                <div class="message" id="message"></div>
+                <div class="answer-review" id="answerReview"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Korrekte Antworten definieren
+        const correctAnswers = {
+            q1: ['emails', 'texte'], // Mehrfachauswahl: E-Mails und Texte (nicht Bilder, da ChatGPT selbst keine Bilder generiert)
+            q2: 'eingabe',
+            q3: 'kreativitaet',
+            q4: 'generative',
+            q5: 'ja_anweisung',
+            q6: 'nein', // ChatGPT kann keine direkten Exporte in diese Formate
+            q7: 'genauer',
+            q8: 'neuer_chat',
+            q9: 'kritisch',
+            q10: 'richtig'
+        };
+
+        const questionTexts = {
+            q1: 'Was kannst du mit ChatGPT direkt umsetzen?',
+            q2: 'Was bedeutet es, wenn wir im Kurs von einem "Prompt" gesprochen haben?',
+            q3: 'Was ist ein typischer Vorteil davon, die sogenannte Temperatur-Einstellung in ChatGPT anzupassen?',
+            q4: 'Was bedeutet die Abkürzung "GPT" im Kontext von ChatGPT?',
+            q5: 'Kann ChatGPT auf Spanisch antworten, obwohl ich meine Fragen auf Deutsch stelle?',
+            q6: 'Kann ChatGPT mir Dokumente in gängigen Formaten wie PDF, Word, Excel etc. exportieren?',
+            q7: 'Wenn du ein Ergebnis von ChatGPT noch einmal verbessern möchtest, was solltest du tun?',
+            q8: 'Wenn ich ein neues Thema mit ChatGPT behandle:',
+            q9: 'Was ist wichtig im Umgang mit KI',
+            q10: 'Was ist KI?'
+        };
+
+        const answerTexts = {
+            q1: {
+                'emails': 'E-Mails verfassen lassen',
+                'texte': 'Texte schreiben',
+                'bilder': 'Bilder generieren'
+            },
+            q2: {
+                'hardware': 'Eine spezielle Hardware für KI',
+                'eingabe': 'Eine Eingabe oder Frage, die du der KI stellst',
+                'ergebnis': 'Ein Ergebnis, das die KI liefert'
+            },
+            q3: {
+                'leistung': 'Leistung von PC minimieren',
+                'geschwindigkeit': 'Geschwindigkeit der Antwort beeinflussen',
+                'kreativitaet': 'Kreativität der Antworten beeinflussen'
+            },
+            q4: {
+                'global': 'Global Prompting Technique',
+                'generative': 'Generative Pre-trained Transformer',
+                'general': 'General Parameter Telegram'
+            },
+            q5: {
+                'ja_anweisung': 'Ja, wenn ich ihm diese Anweisung gebe',
+                'ja_pro': 'Ja, dafür braucht es aber die Pro-Version von ChatGPT',
+                'nein': 'Nein'
+            },
+            q6: {
+                'ja': 'Ja',
+                'nein': 'Nein'
+            },
+            q7: {
+                'gleiche_frage': 'Einfach nochmal die gleiche Frage stellen',
+                'genauer': 'Deine Anweisung oder den Prompt genauer formulieren',
+                'neustart': 'Den Computer neu starten'
+            },
+            q8: {
+                'gleicher_chat': 'Kann ich immer im gleichen Chat bleiben',
+                'neuer_chat': 'Erhalte ich bessere Resultate wenn ich einen neuen Chat öffne'
+            },
+            q9: {
+                'blind_vertrauen': 'Blind vertrauen und für alles nutzen',
+                'kritisch': 'Kritisch hinterfragen und die Ergebnisse überprüfen',
+                'ueberfordern': 'Die KI immer mit komplexen Aufgaben überfordern'
+            },
+            q10: {
+                'richtig': 'KI kann Aufgaben wie Menschen erledigen: verstehen, lernen, Entscheidungen treffen. Generative KI kann sogar neue Inhalte wie Texte, Bilder oder Musik erschaffen.',
+                'falsch': 'KI ist ein Roboter, der immer alles weiss, nie Fehler macht und ganz von selbst denken kann.'
+            }
+        };
+
+        // Event Listener für Options-Styling  
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing quiz...');
+            
+            document.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', function(e) {
+                    const input = this.querySelector('input');
+                    console.log('Option clicked:', input.name, input.value, input.type);
+                    
+                    if (input.type === 'radio') {
+                        // Alle anderen Radio-Optionen in der gleichen Gruppe deselektieren
+                        document.querySelectorAll(`input[name="${input.name}"]`).forEach(radio => {
+                            radio.closest('.option').classList.remove('selected');
+                            radio.checked = false;
+                        });
+                        // Input checken und Option als selected markieren
+                        input.checked = true;
+                        this.classList.add('selected');
+                    } else if (input.type === 'checkbox') {
+                        // Checkbox toggle - einfachere Logik
+                        if (e.target === input) {
+                            // Direkter Klick auf Checkbox - Browser handhabt es
+                            setTimeout(() => {
+                                if (input.checked) {
+                                    this.classList.add('selected');
+                                } else {
+                                    this.classList.remove('selected');
+                                }
+                            }, 10);
+                        } else {
+                            // Klick auf Label - manuell togglen
+                            input.checked = !input.checked;
+                            if (input.checked) {
+                                this.classList.add('selected');
+                            } else {
+                                this.classList.remove('selected');
+                            }
+                        }
+                        console.log('Checkbox state:', input.value, input.checked);
+                    }
+                });
+                
+                // Zusätzlicher Event Listener direkt auf den Input
+                const input = option.querySelector('input');
+                if (input.type === 'checkbox') {
+                    input.addEventListener('change', function() {
+                        const option = this.closest('.option');
+                        if (this.checked) {
+                            option.classList.add('selected');
+                        } else {
+                            option.classList.remove('selected');
+                        }
+                        console.log('Checkbox changed:', this.value, this.checked);
+                    });
+                }
+            });
+            
+            // Form Submit Handler
+            document.getElementById('quizForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                console.log('Form submitted!');
+                evaluateQuiz();
+            });
+        });
+
+        function evaluateQuiz() {
+
+            console.log('Evaluating quiz...');
+            
+            // Alle Antworten sammeln
+            let userAnswers = {};
+            
+            // Frage 1 (Checkboxes)
+            const q1Answers = [];
+            document.querySelectorAll('input[name="q1"]:checked').forEach(input => {
+                q1Answers.push(input.value);
+            });
+            userAnswers.q1 = q1Answers;
+            
+            // Fragen 2-10 (Radio buttons)
+            for (let i = 2; i <= 10; i++) {
+                const questionName = `q${i}`;
+                const checkedInput = document.querySelector(`input[name="${questionName}"]:checked`);
+                userAnswers[questionName] = checkedInput ? checkedInput.value : null;
+            }
+            
+            console.log('User answers:', userAnswers);
+            
+            let score = 0;
+            let totalQuestions = 10;
+            let incorrectAnswers = [];
+            
+            // Überprüfe jede Frage
+            for (let question in correctAnswers) {
+                let userAnswer = userAnswers[question];
+                let isCorrect = false;
+                
+                if (question === 'q1') {
+                    // Mehrfachauswahl für Frage 1
+                    const correctQ1 = correctAnswers[question];
+                    isCorrect = userAnswer && userAnswer.length === correctQ1.length && 
+                              userAnswer.every(ans => correctQ1.includes(ans)) &&
+                              correctQ1.every(ans => userAnswer.includes(ans));
+                } else {
+                    // Einzelauswahl für alle anderen Fragen
+                    isCorrect = userAnswer === correctAnswers[question];
+                }
+                
+                if (isCorrect) {
+                    score++;
+                } else {
+                    incorrectAnswers.push({
+                        question: question,
+                        userAnswer: userAnswer,
+                        correctAnswer: correctAnswers[question]
+                    });
+                }
+            }
+            
+            console.log(`Score: ${score}/${totalQuestions}`);
+            
+            // Ergebnisse anzeigen
+            showResults(score, totalQuestions, incorrectAnswers);
+        }
+        function showResults(score, total, incorrectAnswers) {
+            
+            console.log('Showing results...');
+            
+            const percentage = Math.round((score / total) * 100);
+            const resultsDiv = document.getElementById('results');
+            const scoreDiv = document.getElementById('score');
+            const messageDiv = document.getElementById('message');
+            const reviewDiv = document.getElementById('answerReview');
+            
+            scoreDiv.textContent = `Ihr Ergebnis: ${score}/${total} Fragen richtig (${percentage}%)`;
+            
+            if (percentage === 100) {
+                scoreDiv.className = 'score perfect';
+                messageDiv.className = 'message success';
+                messageDiv.textContent = 'Das war grossartig von Dir. Bravo!';
+            } else {
+                scoreDiv.className = 'score failed';
+                messageDiv.className = 'message failure';
+                messageDiv.textContent = 'Es hat noch etwas Luft nach oben. Schau Dir die falschen Antworten an und löse den Test mit ChatGPT.';
+            }
+            
+            // Zeige falsche Antworten an
+            if (incorrectAnswers.length > 0) {
+                reviewDiv.innerHTML = '<h3>Antwortübersicht (falsche Antworten):</h3>';
+                
+                incorrectAnswers.forEach(item => {
+                    const answerItem = document.createElement('div');
+                    answerItem.className = 'answer-item incorrect';
+                    
+                    let userAnswerText;
+                    let correctAnswerText;
+                    
+                    if (item.question === 'q1') {
+                        // Mehrfachauswahl
+                        userAnswerText = item.userAnswer && item.userAnswer.length > 0 ? 
+                                        item.userAnswer.map(ans => answerTexts[item.question][ans]).join(', ') : 
+                                        'Keine Auswahl';
+                        correctAnswerText = item.correctAnswer.map(ans => answerTexts[item.question][ans]).join(', ');
+                    } else {
+                        // Einzelauswahl
+                        userAnswerText = item.userAnswer ? answerTexts[item.question][item.userAnswer] : 'Keine Auswahl';
+                        correctAnswerText = answerTexts[item.question][item.correctAnswer];
+                    }
+                    
+                    answerItem.innerHTML = `
+                        <h4>${questionTexts[item.question]}</h4>
+                        <div class="your-answer">Ihre Antwort: ${userAnswerText}</div>
+                        <div class="correct-answer">Korrekte Antwort: ${correctAnswerText}</div>
+                    `;
+                    
+                    reviewDiv.appendChild(answerItem);
+                });
+            } else {
+                reviewDiv.innerHTML = '<h3 style="color: #28a745; text-align: center;">Alle Antworten waren korrekt! 🎉</h3>';
+            }
+            
+            resultsDiv.classList.add('show');
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
